@@ -1,81 +1,133 @@
 package org.example;
 
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Calculater {
+    ArrayList<Integer> numbers;
+
+    int answer=0;
 
    public Calculater(){
        go();
    }
    public void go(){
-       int answer=0;
-       int res=0;
-       int x=1;
+       numbers=new ArrayList<>();
+
+
+       int x=0;
+       String innerAction=null;
        String action=null;
        System.out.print("prompt: ");
        Scanner scanner=new Scanner(System.in);
        String prompt=scanner.nextLine();
-       String[] parts = prompt.split("(?<=\\+|\\*)|(?<=\\()|(?<=\\d)(?=\\+\\*)|(?<=\\+|\\*)(?=\\d)|(?=\\))|(?=\\+|\\*)");
-       System.out.println("Length: "+parts.length);
-       for (int i = 0; i < parts.length; i++) {
-           if(parts[i].equals("(")){
+       String[] parts = prompt.split("(?<=\\+|\\*|\\-|\\/)|(?<=\\()|(?<=\\d)(?=\\+\\*)|(?<=\\+|\\*|\\-|\\/)(?=\\d)|(?=\\))|(?=\\+|\\*|\\-|\\/)");
 
-               action=parts[x+1];
 
-               while (!parts[x].equals(")")){
+           if(parts[0].equals("(")) {
+                x=1;
+                int y=0;
+                action=parts[x+1];
+                while (!parts[x].equals(")")){
+                    if(!parts[x].equals(action)){
+                        numbers.add(Integer.parseInt(parts[x]));
+                    }
+                    x++;
+                    y++;
 
-                    if(action.equals("+")){
-                        if(!parts[x].equals("+")){
-                            answer+=Integer.parseInt(parts[x]);
-                            System.out.println(parts[x]);
-                        }
-                       }
-                       x++;
-                       i++;
+                }
+              answer+=calculate(numbers,action);
 
-                   }
-           }
-           x+=3;
-           i+=2;
-           if(parts[i].equals("*")){
+                x=0;
+               for (int i=y+2 ; i < parts.length; i++) {
 
-               action=parts[x+1];
+                      action=parts[i];
 
-               while (!parts[x].equals(")")){
+                      if(parts[i+1].equals("(")) {
 
-                   if(action.equals("+")) {
-                       if (!parts[x].equals("+")) {
-                           res += Integer.parseInt(parts[x]);
+                          innerAction=parts[i+3];
+                          numbers.clear();
+                          while (!parts[i].equals(")")) {
 
-                       }
-                   }
-                   x++;
-                   i++;
+                              if (i % 2 == 1 && !parts[i].equals(action)) {
+                                  numbers.add(Integer.parseInt(parts[i]));
 
+                              }
+                              i++;
+                          }
+                          switch (action){
+                              case "+"-> answer += calculate(numbers, innerAction);
+                              case "-"-> answer -= calculate(numbers, innerAction);
+                              case "*"-> answer *= calculate(numbers, innerAction);
+                              case "/"-> answer /= calculate(numbers, innerAction);
+                          }
+                      }
+                      else{
+                          switch (action){
+                              case "+"-> answer += Integer.parseInt(parts[i+1]);
+                              case "-"-> answer -= Integer.parseInt(parts[i+1]);
+                              case "*"-> answer *= Integer.parseInt(parts[i+1]);
+                              case "/"-> answer /= Integer.parseInt(parts[i+1]);
+                          }
+                          break;
+
+                      }
                }
-               answer*=res;
-           }
-           break;
-
-
-
-
-
-
-
-
        }
-       System.out.println("Answer is: "+answer);
+           else {
+               int y=0;
+               answer+=Integer.parseInt(parts[0]);
+               for (int i=y+1 ; i < parts.length; i++) {
+
+                   action=parts[i];
+                   if(parts[i+1].equals("(")) {
+
+                       innerAction=parts[i+3];
+                       numbers.clear();
+                       while (!parts[i].equals(")")) {
+
+                           if (i % 2 == 1 && !parts[i].equals(action)) {
+                               numbers.add(Integer.parseInt(parts[i]));
+
+                           }
+                           i++;
+                       }
+
+
+                       switch (action){
+                           case "+"-> answer += calculate(numbers, innerAction);
+                           case "-"-> answer -= calculate(numbers, innerAction);
+                           case "*"-> answer *= calculate(numbers, innerAction);
+                           case "/"-> answer /= calculate(numbers, innerAction);
+                       }
+
+
+                   }else{
+                       switch (action){
+                           case "+"-> answer += calculate(numbers, innerAction);
+                           case "-"-> answer -= calculate(numbers, innerAction);
+                           case "*"-> answer *= calculate(numbers, innerAction);
+                           case "/"-> answer /= calculate(numbers, innerAction);
+                       }
+                       break;
+                   }
+               }
+           }
+       System.out.println("Answer: "+answer);
+   }
+   public int calculate(ArrayList<Integer> numbers,String action) {
+       int total=0;
+       for (int i : numbers) {
+           if (action.equals("+")) {
+               total += i;
+           }
+       }
+
+       return total;
 
    }
     public static void main(String[] args){
-       Calculater c=new Calculater();
+       new Calculater();
     }
-
-
-
-
-
-
 }
